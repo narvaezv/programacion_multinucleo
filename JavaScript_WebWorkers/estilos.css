@@ -1,0 +1,12 @@
+body {
+	background-color: Gray;
+	color: Black;
+	margin: 40px;
+}
+
+#resultado {
+	background-color: Tomato;
+	color: Yellow;
+	padding: 20px;
+	font-size: 70px;
+}
