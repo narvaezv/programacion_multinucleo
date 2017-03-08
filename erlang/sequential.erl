@@ -51,7 +51,7 @@ insert(H, sort(T)).
 % 5. Binary
 binary(0) -> [];
 binary(N) ->
-binary(N div 2) ++ [N rem 2].
+binary(N div 2) ++ [N rem 2].   
 
 % ----------------------------------------------------------------------------------
 % 6. Binary Coded Decimal
@@ -85,9 +85,14 @@ bcdv(N).
 
 % ----------------------------------------------------------------------------------
 % 7. Prime Factors
-prime_factors(1) -> [];
-prime_factors(N) ->
-N.
+
+prime_factors(N) when N > 0 -> 
+    prime_factors(N,2,[]).
+
+prime_factors(N,I,R) when I*I > N -> R ++ [N];
+prime_factors(N,I,R) when (N rem I) =:= 0 -> prime_factors(N div I,I,[I|R]);
+prime_factors(N,2,R) -> prime_factors(N,3,R);
+prime_factors(N,I,R) -> prime_factors(N,I+2,R).
 
 
 % ----------------------------------------------------------------------------------
@@ -100,8 +105,43 @@ compress([H1 | T]);
 compress([H | [H1 | T]]) when H /= H1 ->
 [H | compress([H1 | T])].
 
-% ----------------------------------------------------------------------------------
-% 9. Encode
+%-----------------------------------------------------------------------------------
+%AUX. Reverse
+reverse([]) -> [];
+reverse([H|T]) -> reverse(T)++[H].
 
 % ----------------------------------------------------------------------------------
+% 9. Encode
+encode([])-> [];
+encode([H|T]) ->
+    encode(T,H,1,[]).
+    
+encode([],Prev,ACC,L) ->
+    reverse([{ACC,Prev}|L]);
+encode([H|T],Prev,ACC,L) when H == Prev ->
+    encode(T,Prev,ACC+1,L);
+encode([H|T],Prev,ACC,L) when ACC == 1 ->
+    encode(T,H,1,[Prev|L]);
+encode([H|T],Prev,ACC,L) when ACC > 1 ->
+    encode(T,H,1,[{ACC,Prev}|L]).
+
+% ----------------------------------------------------------------------------------
+% AUX. Repeat
+repeat(N,E) ->
+    repeat(N,E,[]).
+repeat(N,E,L) when N > 0 ->
+    repeat(N-1,E,[E|L]);
+repeat(_N,_E,L) -> L.
+% ----------------------------------------------------------------------------------
+
 % 10. Decode
+decode([])-> [];
+decode(LST) -> decode(LST,[]).
+
+decode([],L) ->
+    reverse(L);
+decode([H|T],L) when is_tuple(H) == true ->
+    {ACC,Element} = H,
+    decode(T,repeat(ACC,Element) ++ L);
+decode([H|T],L) ->
+    decode(T,[H|L]).
