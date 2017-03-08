@@ -51,19 +51,44 @@ insert(H, sort(T)).
 % 5. Binary
 binary(0) -> [];
 binary(N) ->
-lists:append([binary(N div 2), [N rem 2]]).
+binary(N div 2) ++ [N rem 2].
 
 % ----------------------------------------------------------------------------------
 % 6. Binary Coded Decimal
 % shell:strings(true).
-bcd(0) -> ["0000"];
-bcd(N) -> lists:append("00", "11").
+digits(0) -> [0];
+digits(N) when N < 10 -> [N];
+digits(N) when N div 10 > 10 ->
+digits(N div 10) ++ [N rem 10];
+digits(N) when N div 10 < 10 ->
+[N div 10] ++ [N rem 10].
+
+bcdv(0) -> ["0000"];
+bcdv(1) -> ["0001"];
+bcdv(2) -> ["0010"];
+bcdv(3) -> ["0011"];
+bcdv(4) -> ["0100"];
+bcdv(5) -> ["0101"];
+bcdv(6) -> ["0110"];
+bcdv(7) -> ["0111"];
+bcdv(8) -> ["1000"];
+bcdv(9) -> ["1001"].
+
+do_bcd([]) -> [];
+do_bcd([H | T]) ->
+bcdv(H) ++ do_bcd(T).
+
+bcd(N) when N > 9 ->
+do_bcd(digits(N));
+bcd(N) ->
+bcdv(N).
 
 % ----------------------------------------------------------------------------------
 % 7. Prime Factors
 prime_factors(1) -> [];
-prime_factors(N) when N rem N - 1 == 0 ->
-prime_factors(N - 1).
+prime_factors(N) ->
+N.
+
 
 % ----------------------------------------------------------------------------------
 % 8. Compress
