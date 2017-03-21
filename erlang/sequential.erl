@@ -4,7 +4,6 @@
 % Authors: 
 %          A01167870 Joel Narváez Valdivieso
 %          A01373631 Andrea Margarita Pérez Barrera
-% cd("c:/Users/usuario/Documents/ISC/8voSemestre/Programación_Multinúcleo/erlang").
 
 -module(sequential).
 -compile(export_all).
