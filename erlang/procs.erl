@@ -1,4 +1,9 @@
-% cd("c:/Users/usuario/Documents/ISC/8voSemestre/Programación_Multinúcleo/erlang").
+% ITESM CEM, March 21, 2017.
+% Erlang Source File
+% Activity: Práctica #6: Erlang concurrente
+% Authors: 
+%          A01167870 Joel Narváez Valdivieso
+%          A01373631 Andrea Margarita Pérez Barrera
 
 -module(procs).
 -compile(export_all).
@@ -112,3 +117,25 @@ pring(_P, N, _I, Pid) ->
 
 % ----------------------------------------------------------------------------------
 % 5. Star
+
+star(P, N) ->
+	Main = self(),
+	io:format("Current process ~p~n", [self()]),
+	Center = spawn(fun() -> center(P, N, Main) end),
+	io:format("Created ~p (center) ~n", [Center]),
+	receive
+		done -> io:format("All done~n")
+	end.
+
+center(P, N, Main) when P > 0 ->
+	Center = self(),
+	Pd = spawn(fun () -> pstar(Center) end),
+	io:format("Created ~p~n", [Pd]),
+	center(P-1, N, Main);
+center(_P, _N, Main) -> 
+	Main ! done.
+
+pstar(Center) ->
+	io:format("Hello ~p~n", [Center]).
+
+% cd("c:/Users/usuario/Documents/ISC/8voSemestre/Programación_Multinúcleo/erlang").
