@@ -121,21 +121,49 @@ pring(_P, N, _I, Pid) ->
 star(P, N) ->
 	Main = self(),
 	io:format("Current process ~p~n", [self()]),
-	Center = spawn(fun() -> center(P, N, Main) end),
+	Center = spawn(fun() -> center(P, N, 0, Main, []) end),
 	io:format("Created ~p (center) ~n", [Center]),
 	receive
-		done -> io:format("All done~n")
+		done -> %io:format("All done~n"),
+		        Center ! self()
 	end.
 
-center(P, N, Main) when P > 0 ->
+center(P, N, _I, Main, All) when P > 0 ->
 	Center = self(),
-	Pd = spawn(fun () -> pstar(Center) end),
+	Pd = spawn(fun () -> pstar(Center, N, 1) end),
 	io:format("Created ~p~n", [Pd]),
-	center(P-1, N, Main);
-center(_P, _N, Main) -> 
-	Main ! done.
+	center(P-1, N, N+1, Main, All ++ [Pd]);
+center(P, N, I, Main, All) when I == 0 ->
+	H = lists:nth(I+1, All),
+	io:format("Process to send: ~p~n",[H]),
+	receive
+		Pid -> io:format("~p received ~p/~p from ~p~n", [self(), I, N, Pid]),
+	         H ! message,
+					 center(P, N, 1, Main, All)
+	end;
+center(P, N, I, Main, All) when I < N -> 
+	H = lists:nth(I+1, All),
+	io:format("Processssss to send: ~p~n",[H]),
+	receive
+		{Times, Pid} -> io:format("~p received ~p/~p from ~p~n", [self(), Times, N, Pid]),
+		                H ! message,
+									  center(P, N, Times, Main, All)
+	end;
+center(P, _N, _I, Main, All) -> 
+	Main ! done,
+	center(P, 4, 0, Main, All).
 
-pstar(Center) ->
-	io:format("Hello ~p~n", [Center]).
+pstar(Center, N, I) when N > I ->
+	%io:format("Hello ~p~n", [Center]),
+	receive
+		message -> io:format("~p received ~p/~p from ~p~n", [self(), I, N, Center]),
+							 Center ! {I, self()},
+							 pstar(Center, N, I+1)
+	end;
+pstar(Center, N, I) ->
+	receive
+		message -> io:format("~p receivedd ~p/~p from ~p~n", [self(), I, N, Center]),
+				       io:format("~p finished~n", [self()])
+	end.
 
 % cd("c:/Users/usuario/Documents/ISC/8voSemestre/Programación_Multinúcleo/erlang").
