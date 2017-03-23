@@ -121,37 +121,37 @@ pring(_P, N, _I, Pid) ->
 star(P, N) ->
 	Main = self(),
 	io:format("Current process ~p~n", [self()]),
-	Center = spawn(fun() -> center(P, N, 0, Main, []) end),
+	Center = spawn(fun() -> center(P, N, 0, Main, P * 2, []) end),
 	io:format("Created ~p (center) ~n", [Center]),
 	receive
 		done -> %io:format("All done~n"),
 		        Center ! self()
 	end.
 
-center(P, N, _I, Main, All) when P > 0 ->
+center(P, N, _I, Main, End, All) when P > 0 ->
 	Center = self(),
 	Pd = spawn(fun () -> pstar(Center, N, 1) end),
 	io:format("Created ~p~n", [Pd]),
-	center(P-1, N, N+1, Main, All ++ [Pd]);
-center(P, N, I, Main, All) when I == 0 ->
+	center(P-1, N, N+1, Main, End, All ++ [Pd]);
+center(P, N, I, Main, End, All) when I == 0 ->
 	H = lists:nth(I+1, All),
 	io:format("Process to send: ~p~n",[H]),
 	receive
 		Pid -> io:format("~p received ~p/~p from ~p~n", [self(), I, N, Pid]),
 	         H ! message,
-					 center(P, N, 1, Main, All)
+					 center(P, N, 1, Main, End, All)
 	end;
-center(P, N, I, Main, All) when I < N -> 
+center(P, N, I, Main, End, All) when I < N -> 
 	H = lists:nth(I+1, All),
-	io:format("Processssss to send: ~p~n",[H]),
+	io:format("Process to send: ~p~n",[H]),
 	receive
 		{Times, Pid} -> io:format("~p received ~p/~p from ~p~n", [self(), Times, N, Pid]),
 		                H ! message,
-									  center(P, N, Times, Main, All)
+									  center(P, N, Times, Main, End, All)
 	end;
-center(P, _N, _I, Main, All) -> 
+center(P, N, _I, Main, End, All) -> 
 	Main ! done,
-	center(P, 4, 0, Main, All).
+	center(P, N, 0, Main, End, All).
 
 pstar(Center, N, I) when N > I ->
 	%io:format("Hello ~p~n", [Center]),
