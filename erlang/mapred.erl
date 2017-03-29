@@ -67,6 +67,28 @@ aux(N) ->
   end.  
 
 % ----------------------------------------------------------------------------------
-% 3. 
+% 4. Phil13
 
-% cd("c:/Users/usuario/Documents/ISC/8voSemestre/Programación_Multinúcleo/erlang").
+digits(0)-> 0;
+digits(N) when N < 10 -> [N];
+digits(N) when N >= 10 -> 
+  digits(N div 10)++[N rem 10].
+
+phil13(S, E) ->
+  List = createList(S, E),
+  Dict = dict:to_list(
+		plists:mapreduce(fun (X) -> weird(X) end, List)),
+  case Dict of
+    [{true, A}, {false, _B}] -> A;
+    [{false, _A}, {true, B}] -> B;
+    [{true, A}] -> A;
+    [{false, _A}] -> []
+  end.
+
+weird(N) ->
+  Number = pow(2, N),
+  Result = lists:sum(digits(Number)),
+  if
+    Result rem 13 == 0 -> {true, N};
+    Result rem 13 /= 0 -> {false, N}
+  end.
