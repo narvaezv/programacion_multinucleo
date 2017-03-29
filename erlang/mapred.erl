@@ -66,6 +66,37 @@ aux(N) ->
     _ -> {true, N}
   end.  
 
+
+%-----------------------------------------------------
+% 3. Sexy
+
+sexy(S, E) ->
+
+    Primes = primes(S,E),
+    Dict = dict:to_list(
+		plists:mapreduce(fun (X) -> isSexy(X) end, Primes)),
+	case Dict of
+    [{true, A}, {false, _D}] -> A;
+    [{false, _A}, {true, B}] -> B;
+    [{true, A}] -> A;
+    [{false, _A}] -> []
+  end.
+
+isSexy(X) ->
+    isSexy(X+6,1).
+isSexy(X,C) when C == 2 ->
+    Res = isPrime(X),
+    case Res of 
+    {true, X} -> {true, {X-12,X-6,X}};
+    {false, X} -> {false, X}
+    end;
+isSexy(X,C) when C < 2 ->
+    Res = isPrime(X),
+    case Res of 
+    {true, X} -> isSexy(X+6,C+1);
+    {false, X} -> {false, X}
+  end.
+  
 % ----------------------------------------------------------------------------------
 % 4. Phil13
 
