@@ -135,7 +135,7 @@ center(P, N, _I, Main, End, All) when P > 0 ->
 	center(P-1, N, N+1, Main, End, All ++ [Pd]);
 center(P, N, I, Main, End, All) when I == 0 ->
 	H = lists:nth(I+1, All),
-	io:format("Process to send: ~p~n",[H]),
+	%io:format("Process to send: ~p~n",[H]),
 	receive
 		Pid -> io:format("~p received ~p/~p from ~p~n", [self(), I, N, Pid]),
 	         H ! message,
@@ -143,7 +143,7 @@ center(P, N, I, Main, End, All) when I == 0 ->
 	end;
 center(P, N, I, Main, End, All) when I < N -> 
 	H = lists:nth(I+1, All),
-	io:format("Process to send: ~p~n",[H]),
+	%io:format("Process to send: ~p~n",[H]),
 	receive
 		{Times, Pid} -> io:format("~p received ~p/~p from ~p~n", [self(), Times, N, Pid]),
 		                H ! message,
