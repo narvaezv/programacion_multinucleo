@@ -44,22 +44,29 @@ isPrime(N) when N rem 1 == 0 ->
 apocalyptic(S, E) ->
   List = createList(S, E),
   Dict = dict:to_list(
-		plists:mapreduce(fun (X) -> aux(X) end, List)).
+		plists:mapreduce(fun (X) -> aux(X) end, List)),
+  case Dict of
+    [{true, A}, {false, _B}] -> A;
+    [{false, _A}, {true, B}] -> B;
+    [{true, A}] -> A;
+    [{false, _A}] -> []
+  end.
 
-digits(0) -> [0];
-digits(N) when N < 10 -> [N];
-digits(N) when N div 10 > 10 ->
-digits(N div 10) ++ [N rem 10];
-digits(N) when N div 10 < 10 ->
-[N div 10] ++ [N rem 10].
+pow(_B, 0) ->
+  1;
+pow(B, E) when E > 0 ->
+  B * pow(B, E - 1).
 
 aux(N) ->
-  Number = math:pow(2, N),
-  Snumber = float_to_list(Number, [{decimals,0}]),
+  Number = pow(2, N),
+  Snumber = integer_to_list(Number),
   Nnumber = string:str(Snumber, "666"),
   case Nnumber of 
     0 -> {false, N};
     _ -> {true, N}
-  end.
+  end.  
+
+% ----------------------------------------------------------------------------------
+% 3. 
 
 % cd("c:/Users/usuario/Documents/ISC/8voSemestre/Programación_Multinúcleo/erlang").
