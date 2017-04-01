@@ -5,12 +5,6 @@
 
 #define NANOSECS_PER_SEC 1000000000
 
-void print_array(int *p, int n){
-	for (int i = 0; i < n; ++i) {
-    	printf( "r[%d] = %d\n", i, p[i]);
-  	}
-}
-
 long get_time() {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC, &t);
@@ -20,7 +14,7 @@ long get_time() {
 void get_random(int *p, int n) {
    time_t t;
    srand((unsigned)time(&t));
-   
+
    #pragma omp parallel for
    for (int i = 0; i < n; ++i) {
       p[i] = rand() % 10;
