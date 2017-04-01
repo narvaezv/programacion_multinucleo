@@ -12,12 +12,11 @@ long get_time() {
 }
 
 void get_random(int *p, int n) {
-   time_t t;
-   srand((unsigned)time(&t));
+   int seed;
 
    #pragma omp parallel for
    for (int i = 0; i < n; ++i) {
-      p[i] = rand() % 10;
+      p[i] = rand_r(&seed) % 10;
    }
 }
 
